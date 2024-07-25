@@ -1,0 +1,96 @@
+body {
+  font-family: Arial, sans;
+  text-align: center;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  padding: 20px;
+}
+
+:root {
+  --slideshow-container-width: 14.2cm;
+  --slideshow-container-height: 10.67cm;
+}
+
+.slideshow-container {
+  position: relative;
+  width: var(--slideshow-container-width); /* 固定为7英寸 */
+  height: var(--slideshow-container-height); /* 固定为7英寸 */
+  margin: 20px auto;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.slideshow {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slideshow .carousel-inner, .slideshow .carousel-item {
+  width: 100%;
+  height: 100%;
+}
+
+.slideshow img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.upload-btn,
+.like-btn {
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.upload-btn:hover,
+.like-btn:hover {
+  background-color: #0056b3;
+}
+
+.like-button {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.like-button.liked {
+  background-color: #ff4500;
+}
+
+.like-count {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  padding: 5px;
+}
+
+.like-count.increase {
+  animation: like-increase 0.5s ease-in-out;
+}
+
+@keyframes like-increase {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
