@@ -122,6 +122,28 @@ async function getLike(request: Request, env: Env): Promise<Response> {
 	})
 }
 
+async function uploader(request: Request, env: Env): Promise<Response> {
+    const object = await env.MY_BUCKET.get('uploader.html');
+
+	return new Response(await object?.text(), {
+		headers: {
+			...corsHeaders,
+            'content-type': 'text/html; charset=UTF-8',
+		}
+	})
+}
+
+async function album(request: Request, env: Env): Promise<Response> {
+    const object = await env.MY_BUCKET.get('album.html');
+
+	return new Response(await object?.text(), {
+		headers: {
+			...corsHeaders,
+            'content-type': 'text/html; charset=UTF-8',
+		}
+	})
+}
+
 interface Route {
 	pattern: RegExp,
 	handler: (request: Request, env: Env) => Promise<Response>,
@@ -133,6 +155,8 @@ const routes: Route[] = [
 	{pattern: /^\/([^\/]+)\/like$/, handler: getLike, method: 'GET'},
 	{pattern: /^\/([^\/]+)$/, handler: upload, method: 'POST'},
 	{pattern: /^\/$/, handler: list, method: 'GET'},
+	{pattern: /^\/uploader$/, handler: uploader, method: 'GET'},
+	{pattern: /^\/album$/, handler: album, method: 'GET'},
 ]
 
 async function handleOptions(request: Request) {
