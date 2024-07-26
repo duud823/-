@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>猫咪献血</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+            }        
+
+            main {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+
+            button {
+                padding: 10px 20px;
+                border: 1px solid #007bff;
+                background-color: white;
+                cursor: pointer;
+            }
+
+            .preview {
+                max-width: 300px;
+                max-height: 300px;
+                margin-bottom: 20px;
+            }
+
+            .loading {
+                display: none;
+                width: 50px;
+                height: 50px;
+                border: 5px solid #f3f3f3;
+                border-top: 5px solid #3498db;
+                border-radius: 50%;
+                animation: spin 2s linear infinite;
+            }
+
+            .cancel {
+                margin-right: 20px;
+            }
+
+            .hidden {
+                display: none !important;
+            }
+
+            .step-2 {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .progress {
+                width: 80%;
+                height: 10px;
+                background-color: #f3f3f3;
+                margin: 20px 20px;
+                border-radius: 5px;
+            }
+
+            .progress-bar {
+                width: 0;
+                height: 10px;
+                border-radius: 5px;
+                background-color: #007bff;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <div class="preview"></div>
+            <button class="step-1">上传图片</button>
+            <div class="step-2 hidden">
+                <button class="cancel">取消</button>
+                <button class="confirm">确认</button>
+            </div>
+            <div class="progress">
+                <div class="progress-bar"></div>
+            </div>
+            <input type="file" id="image-upload" multiple accept="image/*" style="display: none;"/>
+        </main>
+        <script>
+            document.addEventListener('DOMContentLoaded', (e) => {
+                const preview = document.querySelector('.preview');
+                const step1 = document.querySelector('.step-1');
+                const step2 = document.querySelector('.step-2');
+                const cancel = document.querySelector('.cancel');
+                const confirm = document.querySelector('.confirm');
+                const imageUpload = document.querySelector('#image-upload');
+                const progress = document.querySelector('.progress');
+
+                step1.addEventListener('click', (e) => {
+                    imageUpload.click();
+                });
+
+                imageUpload.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        preview.innerHTML = `<img src="${e.target.result}" style="max-width: 100%; max-height: 100%;"/>`;
+                        step1.classList.add('hidden');
+                        step2.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                cancel.addEventListener('click', (e) => {
+                    reset();
+                });
+
+                function reset() {
+                    preview.innerHTML = '';
+                    step1.classList.remove('hidden');
+                    step2.classList.add('hidden');
+                    progress.classList.add('hidden');
+                }
+
+                confirm.addEventListener('click', (e) => {
+                    const id = new Date().getTime();
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', `https://cat-donating-blood.liukebin.cn/${id}`);
+                    xhr.upload.onloadstart = (e) => {
+                        progress.classList.remove('hidden');
+                    };
+                    xhr.upload.onprogress = (e) => {
+                        const progress = e.loaded / e.total * 100;
+                        document.querySelector('.progress-bar').style.width = `${progress}%`;
+                    };
+                    xhr.send(imageUpload.files[0]);
+                    xhr.onload = (e) => {
+                        if (xhr.status === 200) {
+                            alert('上传成功');
+                        } else {
+                            alert('上传失败');
+                        }
+                        reset();
+                    };
+                });
+            });
+        </script>
+    </body>
+</html>
+</html>
