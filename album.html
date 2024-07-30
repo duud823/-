@@ -95,6 +95,19 @@
             const host = "https://cat-donating-blood.liukebin.cn";
             const r2host = "https://r2-cat-donating-blood.liukebin.cn";
             document.addEventListener("DOMContentLoaded", async (event) => {
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape") {
+                        document.exitFullscreen();
+                    }
+                    if (e.key === "Q") {
+                        if (!document.fullscreenElement) {
+                            document.documentElement.requestFullscreen();
+                        }
+                    }
+                  },
+                  false,
+                );
+
                 const carouselContainer = document.querySelector(".carousel-inner");
 
                 carouselContainer.addEventListener("click", async () => {
