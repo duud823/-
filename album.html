@@ -44,38 +44,62 @@
                 object-fit: contain;
             }
 
-            .like-count {
+            .like-btn {
+                display: flex;
+                align-items: center;
                 position: absolute;
-                bottom: 10px;
-                right: 20px;
-                background-color: rgba(0, 0, 0, 0.5);
+                bottom: 1cm;
+                left: 1cm;
+                background-color: #ED3131;
+                border: none;
+                padding: 0;
+                cursor: pointer;
+                outline: none;
+                z-index: 1000;
+            }
+
+            .like-btn::before {
+                content: "";
+                width: 1cm;
+                height: 1cm;
+                background-color: #ED3131;
+                clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 50% 75%, 18% 100%, 0% 38%);
+            }
+
+            .like-count-box {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 2cm;
+                height: 1cm;
+                background-color: #000;
                 color: #fff;
-                padding: 5px;
+                font-size: 0.6cm;
+                font-weight: bold;
+                border-radius: 0 3px 3px 0;
             }
 
-            .like-count.increase {
-                animation: like-increase 0.5s ease-in-out;
+            .like-btn .like-effect {
+                position: absolute;
+                bottom: 1.5cm;
+                left: 1cm;
+                font-size: 1cm;
+                color: #ED3131;
+                opacity: 0;
+                animation: like-effect 1s ease-in-out;
             }
 
-            @keyframes like-increase {
+            @keyframes like-effect {
                 0% {
                     transform: translateY(0);
                     opacity: 1;
                 }
                 100% {
-                    transform: translateY(-20px);
+                    transform: translateY(-1cm);
                     opacity: 0;
                 }
             }
-
-            .actions {
-                position: fixed;
-                bottom: 0px;
-                left: 20px;
-                z-index: 1000;
-            }
         </style>
-
     </head>
     <body>
         <main>
@@ -83,9 +107,10 @@
                 <div class="slideshow carousel slide" data-ride="carousel" data-wrap="true" data-pause="false" data-touch="true">
                     <div class="carousel-inner"></div>
                 </div>
-                <!-- <button class="like-btn">点赞</button> -->
-            </div>
-            <div class="actions">
+                <button class="like-btn" onclick="likeEventHandler()">
+                    <div class="like-count-box">0</div>
+                    <span class="like-effect">❤️</span>
+                </button>
             </div>
         </main>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -94,6 +119,7 @@
         <script>
             const host = "https://cat-donating-blood.liukebin.cn";
             const r2host = "https://r2-cat-donating-blood.liukebin.cn";
+
             document.addEventListener("DOMContentLoaded", async (event) => {
                 document.addEventListener("keydown", (e) => {
                     if (e.key === "Escape") {
@@ -104,15 +130,9 @@
                             document.documentElement.requestFullscreen();
                         }
                     }
-                  },
-                  false,
-                );
+                }, false);
 
                 const carouselContainer = document.querySelector(".carousel-inner");
-
-                carouselContainer.addEventListener("click", async () => {
-                    likeEventHandler();
-                })
 
                 function likeEventHandler() {
                     const img = carouselContainer.querySelector('.active img');
@@ -121,23 +141,11 @@
                     showLike(count);
                     img.setAttribute('data-like', count);
 
-                    const increaseEffect = document.createElement('div');
-                    increaseEffect.classList.add('like-count', 'increase');
-                    increaseEffect.textContent = `+ ${count}`
-                    carouselContainer.append(increaseEffect);
-                    setTimeout(() => {
-                        increaseEffect.remove();
-                    }, 400)
+                    const effect = document.querySelector('.like-effect');
+                    effect.style.animation = 'none';
+                    effect.offsetHeight; // trigger reflow
+                    effect.style.animation = null;
                 }
-
-                $('.carousel').on('slid.bs.carousel', function () {
-                    const img = this.querySelector('.active img');
-                    showLike(img.dataset.like);
-                })
-
-                $('.carousel').on('slide.bs.carousel', function () {
-                    hideLike()
-                })
 
                 async function fetchImages() {
                     const objects = await fetch(`${host}/`).then((res) => res.json());
@@ -147,30 +155,18 @@
                 }
 
                 async function fetchLike(id) {
-                    return fetch(`${host}/${id}/like`).then((res) => res.json())
+                    return fetch(`${host}/${id}/like`).then((res) => res.json());
                 }
 
                 async function like(id) {
                     return fetch(`${host}/${id}/like`, {
                         method: "POST"
-                    })
+                    });
                 }
 
                 function showLike(count) {
-                    let likeCount = carouselContainer.querySelector('.like-count');
-                    if (!likeCount) {
-                        likeCount = document.createElement('div');
-                        likeCount.classList.add('like-count');
-                        carouselContainer.append(likeCount);
-                    }
-                    likeCount.textContent = `点赞数: ${count}`;
-                }
-
-                function hideLike() {
-                    const likeCount = carouselContainer.querySelector('.like-count');
-                    if (likeCount) {
-                        likeCount.remove();
-                    }
+                    const likeCountBox = document.querySelector('.like-count-box');
+                    likeCountBox.textContent = count;
                 }
 
                 function pushImage(id, key, like) {
@@ -203,4 +199,4 @@
         </script>
     </body>
 </html>
-</html>
+
